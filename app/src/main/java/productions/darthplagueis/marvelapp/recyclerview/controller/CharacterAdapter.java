@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import productions.darthplagueis.marvelapp.R;
+import productions.darthplagueis.marvelapp.database.Character;
 import productions.darthplagueis.marvelapp.model.marvelserviceresults.CharacterResults;
 import productions.darthplagueis.marvelapp.recyclerview.view.CharacterViewHolder;
 
@@ -18,9 +19,9 @@ import productions.darthplagueis.marvelapp.recyclerview.view.CharacterViewHolder
 
 public class CharacterAdapter extends RecyclerView.Adapter<CharacterViewHolder> {
 
-    private List<CharacterResults> characterResultsList = new ArrayList<>();
+    private List<Character> characterResultsList = new ArrayList<>();
 
-    public CharacterAdapter(List<CharacterResults> characterResultsList) {
+    public CharacterAdapter(List<Character> characterResultsList) {
         this.characterResultsList = characterResultsList;
     }
 

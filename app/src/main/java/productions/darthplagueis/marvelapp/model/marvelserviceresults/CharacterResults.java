@@ -26,6 +26,10 @@ public class CharacterResults {
         return thumbnail;
     }
 
+    public CharacterComics getComics() {
+        return comics;
+    }
+
     public List<CharacterUrls> getUrls() {
         return urls;
     }
