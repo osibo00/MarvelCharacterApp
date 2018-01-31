@@ -19,6 +19,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
 import productions.darthplagueis.marvelapp.R;
+import productions.darthplagueis.marvelapp.database.Character;
 import productions.darthplagueis.marvelapp.model.marvelserviceresults.CharacterResults;
 
 /**
@@ -40,10 +41,10 @@ public class CharacterViewHolder extends RecyclerView.ViewHolder {
         nameText = itemView.findViewById(R.id.character_name);
     }
 
-    public void onBind(CharacterResults results) {
+    public void onBind(Character results) {
         Glide.with(context)
                 .asBitmap()
-                .load(results.getThumbnail().getPath() + "." + results.getThumbnail().getExtension())
+                .load(results.getImageUrl())
                 .apply(new RequestOptions().override(imageView.getWidth(), imageView.getHeight()))
                 .listener(new RequestListener<Bitmap>() {
                     @Override
