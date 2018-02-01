@@ -74,7 +74,7 @@ public class CharacterViewHolder extends RecyclerView.ViewHolder {
                     }
                 })
                 .into(imageView);
-
-        nameText.setText(results.getName());
+        String date = String.valueOf(results.getDownloadDate());
+        nameText.setText(date);
     }
 }

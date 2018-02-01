@@ -10,9 +10,10 @@ import android.util.Log;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
-import productions.darthplagueis.marvelapp.database.Character;
 import productions.darthplagueis.marvelapp.database.CharacterDataBase;
 import productions.darthplagueis.marvelapp.database.DatabaseInitializer;
 import productions.darthplagueis.marvelapp.model.MarvelResults;
@@ -29,9 +30,9 @@ import static productions.darthplagueis.marvelapp.BuildConfig.PRIVATE_KEY;
 
 public class UtilityFragment extends Fragment {
 
-    public static final String TAG_RETROFIT_FRAG = "Retrofit_Fragment";
+    public static final String TAG_UTILITY_FRAG = "Utility_Fragment";
     private static TaskStatusCallBack callBack;
-    private static boolean isExecuting = false;
+    private boolean isExecuting = false;
 
     public UtilityFragment() {
     }
@@ -59,28 +60,46 @@ public class UtilityFragment extends Fragment {
         callBack = null;
     }
 
-    private void marvelCharacterCall() {
+    public void initializeDbCheck(@NonNull final CharacterDataBase dataBase) {
+        if (!isExecuting) {
+            CheckDatabase task = new CheckDatabase(dataBase);
+            task.execute();
+            isExecuting = true;
+        }
+    }
+
+    public void makeRetrofitCall(int offset) {
+        if (!isExecuting) {
+            isExecuting = true;
+            marvelCharacterCall(offset);
+        }
+    }
+
+    public void setIsExecuting(Boolean executing) {
+        isExecuting = executing;
+    }
+
+    private void marvelCharacterCall(int offset) {
         Long tsLong = System.currentTimeMillis() / 1000;
         String timeStamp = tsLong.toString();
         String md5Digest = timeStamp + PRIVATE_KEY + API_KEY;
         String hashValue = md5(md5Digest);
 
         MarvelService marvelService = MarvelRetrofit.getInstance().getMarvelService();
-        Call<MarvelResults> call = marvelService.getMarvelResults(timeStamp, API_KEY, hashValue);
+        Call<MarvelResults> call = marvelService.getThirtyResults(30, offset, timeStamp, API_KEY, hashValue);
         call.enqueue(new Callback<MarvelResults>() {
             @Override
             public void onResponse(Call<MarvelResults> call, Response<MarvelResults> response) {
-                Log.d(TAG_RETROFIT_FRAG, "onResponse: Call Request " + call.request());
+                Log.d(TAG_UTILITY_FRAG, "onResponse: Call Request " + call.request());
                 if (response.isSuccessful()) {
                     MarvelResults marvelResults = response.body();
                     List<CharacterResults> characterResultsList = marvelResults.getData().getResults();
                     DatabaseInitializer.populateAsync(CharacterDataBase.getDataBase(getContext()), characterResultsList);
-                    Log.d(TAG_RETROFIT_FRAG, "onResponse: list size " + characterResultsList.size());
-                    Log.d(TAG_RETROFIT_FRAG, "onResponse: list " + response.raw());
+                    Log.d(TAG_UTILITY_FRAG, "onResponse: list size " + characterResultsList.size());
+                    Log.d(TAG_UTILITY_FRAG, "onResponse: list " + response.raw());
                 }
-                GetEntities task = new GetEntities(CharacterDataBase.getDataBase(getContext()));
-                task.execute();
-                Log.d(TAG_RETROFIT_FRAG, "onResponse:  Status " + response.message() + " " + response.code() + " "
+                callBack.retrofitCallComplete();
+                Log.d(TAG_UTILITY_FRAG, "onResponse:  Status " + response.message() + " " + response.code() + " "
                         + response.errorBody());
             }
 
@@ -117,76 +136,29 @@ public class UtilityFragment extends Fragment {
         return "";
     }
 
-    public void getCharacters(CharacterDataBase dataBase, Boolean isDbCreated) {
-        if (!isExecuting) {
-            Log.d(TAG_RETROFIT_FRAG, "getCharacters: ran ");
-            if (isDbCreated) {
-                GetEntities task = new GetEntities(dataBase);
-                task.execute();
-                isExecuting = true;
-            } else {
-                isExecuting = true;
-                marvelCharacterCall();
-            }
-        }
-    }
-
     private static class CheckDatabase extends AsyncTask<Void, Void, Boolean> {
 
-        private CharacterDataBase dataBase;
+        private final CharacterDataBase db;
 
-        CheckDatabase(CharacterDataBase db) {
-            dataBase = db;
+        CheckDatabase(CharacterDataBase dataBase) {
+            db = dataBase;
         }
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            Log.d(UtilityFragment.TAG_RETROFIT_FRAG, "doInBackground: " + String.valueOf(dataBase.characterDao().countCharacters() >= 20));
-            return dataBase.characterDao().countCharacters() >= 20;
+            Log.d(UtilityFragment.TAG_UTILITY_FRAG, "doInBackground: " + String.valueOf(db.characterDao().countCharacters() >= 20));
+            return db.characterDao().countCharacters() >= 20;
         }
 
         @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            callBack.passDatabaseStatus(aBoolean);
-            isExecuting = false;
-        }
-    }
-
-    public void initializeDbCheck(@NonNull final CharacterDataBase dataBase) {
-        if (!isExecuting) {
-            CheckDatabase task = new CheckDatabase(dataBase);
-            task.execute();
-//            isExecuting = true;
-        }
-    }
-
-    private static class GetEntities extends AsyncTask<Void, Void, Void> {
-
-        private CharacterDataBase dataBase;
-        private List<Character> characterList;
-
-        GetEntities(@NonNull final CharacterDataBase db) {
-            dataBase = db;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            characterList = dataBase.characterDao().getAll();
-            Log.d(TAG_RETROFIT_FRAG, "characterResultsInput: Rows Count " + characterList.size());
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            callBack.passCharacterList(characterList);
-            isExecuting = false;
+        protected void onPostExecute(Boolean hasDatabase) {
+            callBack.passDatabaseStatus(hasDatabase);
         }
     }
 
     public interface TaskStatusCallBack {
         void passDatabaseStatus(Boolean status);
 
-        void passCharacterList(List<Character> characterList);
+        void retrofitCallComplete();
     }
-
 }
