@@ -4,14 +4,13 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import productions.darthplagueis.marvelapp.model.marvelserviceresults.CharacterResults;
 import productions.darthplagueis.marvelapp.model.marvelserviceresults.CharacterUrls;
 
-/**
- * Created by oleg on 1/31/18.
- */
 
 public class DatabaseInitializer {
 
@@ -22,12 +21,19 @@ public class DatabaseInitializer {
         task.execute();
     }
 
+    public static void removeCharacters(@NonNull final CharacterDataBase dataBase) {
+        RemoveCharacters task = new RemoveCharacters(dataBase);
+        task.execute();
+    }
+
     private static void characterResultsInput(CharacterDataBase dataBase, List<CharacterResults> resultsList) {
+        Date date = getDownloadDate();
         for (CharacterResults result : resultsList) {
             Character character = new Character();
+            character.setCharacterId(result.getId());
+            character.setDownloadDate(date);
             character.setName(result.getName());
             character.setImageUrl(result.getThumbnail().getPath() + "." + result.getThumbnail().getExtension());
-            character.setNumber(result.getId());
             character.setComicsAvail(result.getComics().getAvailable());
 
             List<CharacterUrls> characterUrls = result.getUrls();
@@ -43,6 +49,13 @@ public class DatabaseInitializer {
         return character;
     }
 
+    private static Date getDownloadDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, 0);
+        Log.d("DATE", "getDownloadDate: " + String.valueOf(calendar.getTime()));
+        return calendar.getTime();
+    }
+
     private static class PopulateDatabase extends AsyncTask<Void, Void, Void> {
 
         private final CharacterDataBase db;
@@ -56,6 +69,21 @@ public class DatabaseInitializer {
         @Override
         protected Void doInBackground(Void... voids) {
             characterResultsInput(db, resultsList);
+            return null;
+        }
+    }
+
+    private static class RemoveCharacters extends AsyncTask<Void, Void, Void> {
+
+        private final CharacterDataBase db;
+
+        RemoveCharacters(CharacterDataBase dataBase) {
+            db = dataBase;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            db.characterDao().deleteAll();
             return null;
         }
     }

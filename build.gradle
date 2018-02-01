@@ -27,6 +27,6 @@ task clean(type: Delete) {
 }
 
 ext {
-    supportLibVersion = "26.1.0"
     archRoomVersion = "1.0.0"
+    archLifecycleVersion = "1.0.0"
 }

@@ -10,7 +10,6 @@ import java.util.List;
 
 import productions.darthplagueis.marvelapp.R;
 import productions.darthplagueis.marvelapp.database.Character;
-import productions.darthplagueis.marvelapp.model.marvelserviceresults.CharacterResults;
 import productions.darthplagueis.marvelapp.recyclerview.view.CharacterViewHolder;
 
 /**
@@ -19,10 +18,15 @@ import productions.darthplagueis.marvelapp.recyclerview.view.CharacterViewHolder
 
 public class CharacterAdapter extends RecyclerView.Adapter<CharacterViewHolder> {
 
-    private List<Character> characterResultsList = new ArrayList<>();
+    private List<Character> characterList;
 
-    public CharacterAdapter(List<Character> characterResultsList) {
-        this.characterResultsList = characterResultsList;
+//    public CharacterAdapter(List<Character> characterList) {
+//        this.characterList = characterList;
+//    }
+
+
+    public CharacterAdapter() {
+        characterList = new ArrayList<>();
     }
 
     @Override
@@ -33,11 +37,16 @@ public class CharacterAdapter extends RecyclerView.Adapter<CharacterViewHolder> 
 
     @Override
     public void onBindViewHolder(CharacterViewHolder holder, int position) {
-        holder.onBind(characterResultsList.get(position));
+        holder.onBind(characterList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return characterResultsList.size();
+        return characterList.size();
+    }
+
+    public void passCharacterList(List<Character> newList) {
+        characterList.addAll(newList);
+        notifyItemRangeInserted(getItemCount(), characterList.size() - 1);
     }
 }

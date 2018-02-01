@@ -3,24 +3,26 @@ package productions.darthplagueis.marvelapp.database;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.TypeConverters;
 
-/**
- * Created by oleg on 1/31/18.
- */
+import java.util.Date;
+
+
 @Entity(tableName = "character")
+@TypeConverters(DateConverter.class)
 public class Character {
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     private int characterId;
+
+    @ColumnInfo(name = "download_date")
+    private Date downloadDate;
 
     @ColumnInfo(name = "character_name")
     private String name;
 
     @ColumnInfo(name = "image_url")
     private String imageUrl;
-
-    @ColumnInfo(name = "character_number")
-    private int number;
 
     @ColumnInfo(name = "comics_available")
     private int comicsAvail;
@@ -39,6 +41,14 @@ public class Character {
         this.characterId = characterId;
     }
 
+    public Date getDownloadDate() {
+        return downloadDate;
+    }
+
+    public void setDownloadDate(Date downloadDate) {
+        this.downloadDate = downloadDate;
+    }
+
     public String getName() {
         return name;
     }
@@ -53,14 +63,6 @@ public class Character {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-    }
-
-    public int getNumber() {
-        return number;
-    }
-
-    public void setNumber(int number) {
-        this.number = number;
     }
 
     public int getComicsAvail() {

@@ -3,10 +3,6 @@ package productions.darthplagueis.marvelapp.retrofit;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Created by oleg on 1/30/18.
- */
-
 public class MarvelRetrofit {
 
     private Retrofit retrofit;
