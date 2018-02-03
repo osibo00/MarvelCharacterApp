@@ -11,14 +11,17 @@ import java.util.Date;
 import java.util.List;
 
 
-
 public class TypeConvertersViewModel extends AndroidViewModel {
 
-    public final LiveData<List<Character>> characterList;
+    public LiveData<List<Character>> characterList;
 
     public TypeConvertersViewModel(@NonNull Application application) {
         super(application);
-        CharacterDataBase dataBase = CharacterDataBase.getDataBase(this.getApplication());
+        initializeDb();
+    }
+
+    private void initializeDb() {
+        CharacterDatabase dataBase = CharacterDatabase.getDataBase(this.getApplication());
         characterList = dataBase.characterDao().findCharactersAfter(getDownloadDate());
     }
 

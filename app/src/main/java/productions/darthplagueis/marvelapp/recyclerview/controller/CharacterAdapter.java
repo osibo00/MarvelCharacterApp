@@ -1,5 +1,6 @@
 package productions.darthplagueis.marvelapp.recyclerview.controller;
 
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import java.util.List;
 
 import productions.darthplagueis.marvelapp.R;
 import productions.darthplagueis.marvelapp.database.Character;
+import productions.darthplagueis.marvelapp.recyclerview.DiffUtility;
 import productions.darthplagueis.marvelapp.recyclerview.view.CharacterViewHolder;
 
 /**
@@ -19,11 +21,6 @@ import productions.darthplagueis.marvelapp.recyclerview.view.CharacterViewHolder
 public class CharacterAdapter extends RecyclerView.Adapter<CharacterViewHolder> {
 
     private List<Character> characterList;
-
-//    public CharacterAdapter(List<Character> characterList) {
-//        this.characterList = characterList;
-//    }
-
 
     public CharacterAdapter() {
         characterList = new ArrayList<>();
@@ -48,5 +45,17 @@ public class CharacterAdapter extends RecyclerView.Adapter<CharacterViewHolder> 
     public void passCharacterList(List<Character> newList) {
         characterList.addAll(newList);
         notifyItemRangeInserted(getItemCount(), characterList.size() - 1);
+    }
+
+    public void clearList() {
+        characterList.clear();
+    }
+
+    public void updateWithDifference(List<Character> newList) {
+        DiffUtility diffUtility = new DiffUtility(characterList, newList);
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtility);
+        characterList.clear();
+        characterList.addAll(newList);
+        diffResult.dispatchUpdatesTo(this);
     }
 }

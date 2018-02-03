@@ -11,6 +11,6 @@ public interface MarvelService {
     Call<MarvelResults> getDefaultResults(@Query("ts") String timeStamp, @Query("apikey") String apiKey, @Query("hash") String hash);
 
     @GET("v1/public/characters")
-    Call<MarvelResults> getThirtyResults(@Query("limit") int limit, @Query("offset") int offset, @Query("ts") String timeStamp,
-                                         @Query("apikey") String apiKey, @Query("hash") String hash);
+    Call<MarvelResults> getCharacterResults(@Query("limit") int limit, @Query("offset") int offset, @Query("ts") String timeStamp,
+                                            @Query("apikey") String apiKey, @Query("hash") String hash);
 }
