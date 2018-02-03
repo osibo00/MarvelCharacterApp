@@ -7,7 +7,7 @@ public class MarvelRetrofit {
 
     private Retrofit retrofit;
 
-    private static MarvelRetrofit instance;
+    private static MarvelRetrofit INSTANCE;
 
     private MarvelRetrofit() {
         String marvelBaseUrl = "https://gateway.marvel.com/";
@@ -18,11 +18,10 @@ public class MarvelRetrofit {
     }
 
     public static MarvelRetrofit getInstance() {
-        if (instance != null) {
-            return instance;
+        if (INSTANCE == null) {
+            INSTANCE = new MarvelRetrofit();
         }
-        instance = new MarvelRetrofit();
-        return instance;
+        return INSTANCE;
     }
 
     public MarvelService getMarvelService() {

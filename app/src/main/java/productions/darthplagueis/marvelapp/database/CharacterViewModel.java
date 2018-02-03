@@ -10,11 +10,19 @@ import java.util.List;
 
 public class CharacterViewModel extends AndroidViewModel {
 
-    public final LiveData<List<Character>> characterList;
+    private LiveData<List<Character>> characterList;
 
     public CharacterViewModel(@NonNull Application application) {
         super(application);
-        CharacterDataBase dataBase = CharacterDataBase.getDataBase(this.getApplication());
+        initializeDb();
+    }
+
+    public void initializeDb() {
+        CharacterDatabase dataBase = CharacterDatabase.getDataBase(this.getApplication());
         characterList = dataBase.characterDao().getAll();
+    }
+
+    public LiveData<List<Character>> getCharacterList() {
+        return characterList;
     }
 }

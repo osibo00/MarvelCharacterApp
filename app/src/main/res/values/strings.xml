@@ -3,4 +3,6 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="character_details">Character Details</string>
+    <string name="see_more_character_info">See More Character Info</string>
 </resources>

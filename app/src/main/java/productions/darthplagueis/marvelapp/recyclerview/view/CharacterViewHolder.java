@@ -1,12 +1,15 @@
 package productions.darthplagueis.marvelapp.recyclerview.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -31,7 +34,8 @@ public class CharacterViewHolder extends RecyclerView.ViewHolder {
     private Context context;
     private RelativeLayout layout;
     private ImageView imageView;
-    private TextView nameText;
+    private TextView nameText, comicText, typeText;
+    private Button moreInfoBtn;
 
     public CharacterViewHolder(View itemView) {
         super(itemView);
@@ -39,12 +43,15 @@ public class CharacterViewHolder extends RecyclerView.ViewHolder {
         layout = itemView.findViewById(R.id.character_layout);
         imageView = itemView.findViewById(R.id.character_image);
         nameText = itemView.findViewById(R.id.character_name);
+        comicText = itemView.findViewById(R.id.character_comic);
+        typeText = itemView.findViewById(R.id.character_type);
+        moreInfoBtn = itemView.findViewById(R.id.character_url_btn);
     }
 
-    public void onBind(Character results) {
+    public void onBind(final Character character) {
         Glide.with(context)
                 .asBitmap()
-                .load(results.getImageUrl())
+                .load(character.getImageUrl())
                 .apply(new RequestOptions().override(imageView.getWidth(), imageView.getHeight()))
                 .listener(new RequestListener<Bitmap>() {
                     @Override
@@ -74,7 +81,18 @@ public class CharacterViewHolder extends RecyclerView.ViewHolder {
                     }
                 })
                 .into(imageView);
-        String date = String.valueOf(results.getDownloadDate());
-        nameText.setText(date);
+
+        nameText.setText(character.getName());
+        String comicString = "Appears in " + String.valueOf(character.getComicsAvail() + " Comics");
+        comicText.setText(comicString);
+
+        moreInfoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String url = character.getCharactersUrl();
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            }
+        });
+
     }
 }

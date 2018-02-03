@@ -6,16 +6,17 @@ import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
 
-@Database(entities = {Character.class}, version = 5)
-public abstract class CharacterDataBase extends RoomDatabase {
+@Database(entities = {Character.class}, version = 1)
+public abstract class CharacterDatabase extends RoomDatabase {
 
-    private static CharacterDataBase INSTANCE;
+    private static CharacterDatabase INSTANCE;
 
     public abstract CharacterDao characterDao();
 
-    public static CharacterDataBase getDataBase(Context context) {
+    public static CharacterDatabase getDataBase(Context context) {
         if (INSTANCE == null) {
-            INSTANCE = Room.databaseBuilder(context.getApplicationContext(), CharacterDataBase.class, "character-database")
+            String DATABASE_NAME = "Marvel_Characters_Database";
+            INSTANCE = Room.databaseBuilder(context.getApplicationContext(), CharacterDatabase.class, DATABASE_NAME)
                     .fallbackToDestructiveMigration()
                     .build();
         }
