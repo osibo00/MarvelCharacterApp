@@ -11,7 +11,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -20,6 +22,7 @@ import productions.darthplagueis.marvelapp.database.CharacterDatabase;
 import productions.darthplagueis.marvelapp.database.CharacterViewModel;
 import productions.darthplagueis.marvelapp.database.DatabaseInitializer;
 import productions.darthplagueis.marvelapp.recyclerview.controller.CharacterAdapter;
+import productions.darthplagueis.marvelapp.recyclerview.view.CharacterViewHolder;
 
 
 public class MainActivity extends AppCompatActivity implements UtilityFragment.TaskStatusCallBack {
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements UtilityFragment.T
 
         preferences = getSharedPreferences("Shared_Prefs", Context.MODE_PRIVATE);
         offset = preferences.getInt(KEY_OFFSET, 0);
+        Log.d(TAG, "onCreate Offset: " + offset);
 
         if (savedInstanceState != null) {
             loadMoreCharacters = savedInstanceState.getBoolean(KEY_LOAD_MORE_CHARS);
@@ -78,11 +82,15 @@ public class MainActivity extends AppCompatActivity implements UtilityFragment.T
                     .add(R.id.main_container, loadingFragment)
                     .commit();
         }
+
         recyclerView.setHasFixedSize(true);
         setScrollListener();
+        setSwipeListener();
 
         viewModel = ViewModelProviders.of(this).get(CharacterViewModel.class);
         //convertersViewModel = ViewModelProviders.of(this).get(TypeConvertersViewModel.class);
+
+
     }
 
     @Override
@@ -184,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements UtilityFragment.T
             fragmentManager.beginTransaction()
                     .remove(loadingFragment)
                     .commit();
+            Toast.makeText(MainActivity.this, "Swipe to remove characters", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -215,5 +224,27 @@ public class MainActivity extends AppCompatActivity implements UtilityFragment.T
                 }
             }
         });
+    }
+
+    private void setSwipeListener() {
+        ItemTouchHelper.SimpleCallback itemCallBack = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                if (viewHolder instanceof CharacterViewHolder) {
+                    Character character = ((CharacterViewHolder) viewHolder).getCharacter();
+                    DatabaseInitializer.removeSpecificCharacter(CharacterDatabase.getDataBase(MainActivity.this), character);
+                    Toast.makeText(MainActivity.this, "Character Removed", Toast.LENGTH_LONG).show();
+                }
+                int position = viewHolder.getAdapterPosition();
+                adapter.removeCharacter(position);
+            }
+        };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemCallBack);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 }

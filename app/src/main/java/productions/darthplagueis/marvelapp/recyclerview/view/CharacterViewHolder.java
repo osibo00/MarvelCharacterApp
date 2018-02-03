@@ -36,6 +36,7 @@ public class CharacterViewHolder extends RecyclerView.ViewHolder {
     private ImageView imageView;
     private TextView nameText, comicText, typeText;
     private Button moreInfoBtn;
+    private Character character;
 
     public CharacterViewHolder(View itemView) {
         super(itemView);
@@ -48,7 +49,12 @@ public class CharacterViewHolder extends RecyclerView.ViewHolder {
         moreInfoBtn = itemView.findViewById(R.id.character_url_btn);
     }
 
+    public Character getCharacter() {
+        return character;
+    }
+
     public void onBind(final Character character) {
+        this.character = character;
         Glide.with(context)
                 .asBitmap()
                 .load(character.getImageUrl())
@@ -93,6 +99,5 @@ public class CharacterViewHolder extends RecyclerView.ViewHolder {
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
             }
         });
-
     }
 }

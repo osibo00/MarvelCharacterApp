@@ -160,17 +160,18 @@ public class UtilityFragment extends Fragment {
 
     private static class CheckDatabase extends AsyncTask<Void, Void, Boolean> {
 
-        private final CharacterDatabase db;
+        private final CharacterDatabase database;
 
         CheckDatabase(CharacterDatabase dataBase) {
-            db = dataBase;
+            this.database = dataBase;
         }
 
         @Override
         protected Boolean doInBackground(Void... voids) {
             // The number 30 is used because that is the list size returned from the initial retrofit call //
-            boolean doesDbExist = db.characterDao().countCharacters() >= 30;
+            boolean doesDbExist = database.characterDao().countCharacters() >= 30;
             Log.d(TAG_UTILITY_FRAG, "Check Database Async: " + doesDbExist);
+            Log.d(TAG_UTILITY_FRAG, "Check Database Size: " + database.characterDao().countCharacters());
             return doesDbExist;
         }
 

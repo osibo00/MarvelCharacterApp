@@ -47,6 +47,11 @@ public class CharacterAdapter extends RecyclerView.Adapter<CharacterViewHolder> 
         notifyItemRangeInserted(getItemCount(), characterList.size() - 1);
     }
 
+    public void removeCharacter(int position) {
+        characterList.remove(position);
+        notifyItemRemoved(position);
+    }
+
     public void clearList() {
         characterList.clear();
     }
