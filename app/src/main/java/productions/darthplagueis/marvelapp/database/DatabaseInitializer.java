@@ -21,6 +21,11 @@ public class DatabaseInitializer {
         task.execute();
     }
 
+    public static void removeSpecificCharacter(@NonNull final CharacterDatabase dataBase, @NonNull final Character character) {
+        RemoveSpecificCharacter task = new RemoveSpecificCharacter(dataBase, character);
+        task.execute();
+    }
+
     public static void removeCharacters(@NonNull final CharacterDatabase dataBase) {
         RemoveCharacters task = new RemoveCharacters(dataBase);
         task.execute();
@@ -58,32 +63,49 @@ public class DatabaseInitializer {
 
     private static class PopulateDatabase extends AsyncTask<Void, Void, Void> {
 
-        private final CharacterDatabase db;
-        private final List<CharacterResults> resultsList;
+        private final CharacterDatabase database;
+        private final List<CharacterResults> characterResults;
 
         PopulateDatabase(CharacterDatabase dataBase, List<CharacterResults> characterResults) {
-            db = dataBase;
-            resultsList = characterResults;
+            this.database = dataBase;
+            this.characterResults = characterResults;
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-            characterResultsInput(db, resultsList);
+            characterResultsInput(database, characterResults);
+            return null;
+        }
+    }
+
+    private static class RemoveSpecificCharacter extends AsyncTask<Void, Void, Void> {
+
+        private final CharacterDatabase database;
+        private final Character character;
+
+        RemoveSpecificCharacter(CharacterDatabase dataBase, Character character) {
+            this.database = dataBase;
+            this.character = character;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            database.characterDao().delete(character);
             return null;
         }
     }
 
     private static class RemoveCharacters extends AsyncTask<Void, Void, Void> {
 
-        private final CharacterDatabase db;
+        private final CharacterDatabase database;
 
         RemoveCharacters(CharacterDatabase dataBase) {
-            db = dataBase;
+            this.database = dataBase;
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-            db.characterDao().deleteAll();
+            database.characterDao().deleteAll();
             return null;
         }
     }
